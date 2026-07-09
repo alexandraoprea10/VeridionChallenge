@@ -1,5 +1,7 @@
 package org.example;
 
+import org.json.JSONObject;
+
 import java.io.IOException;
 import java.net.http.HttpClient;
 import java.time.Duration;
@@ -18,17 +20,22 @@ public class Main {
         Set<String> allTechnologies = new HashSet<>();
 
         HttpClient client = HttpClient.newBuilder()
-                .followRedirects(HttpClient.Redirect.ALWAYS)
+                .followRedirects(HttpClient.Redirect.NORMAL)
                 .connectTimeout(Duration.ofSeconds(20))
                 .build();
 
         VerifyRules secondHelper = new VerifyRules();
+        JSONObject createJSONArray = new JSONObject();
         for (int i = 0; i < domainList.size(); i++) {
             String currentDomain = domainList.get(i);
             try {
-                secondHelper.verifyTechnologies(client, currentDomain, technologyList, allTechnologies);
+                secondHelper.verifyTechnologies(client, currentDomain, technologyList, allTechnologies, secondHelper.createHttpsURL(currentDomain), createJSONArray);
             } catch (Exception e) {
-                System.out.println("Error for domain: "+ currentDomain);
+                try {
+                    secondHelper.verifyTechnologies(client, currentDomain, technologyList, allTechnologies, secondHelper.createHttpURL(currentDomain), createJSONArray);
+                } catch (Exception e2) {
+                    System.out.println("Error for domain: "+ currentDomain +". The error is: " + e2.toString());
+                }
             }
         }
         System.out.println("I found: " + allTechnologies.size());
