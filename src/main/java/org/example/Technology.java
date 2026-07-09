@@ -30,13 +30,13 @@ public class Technology {
     public List<String> getScriptRules() {
         return scriptRules;
     }
-
     public List<String> getCookieRules() {
         return cookieRules;
     }
     public List<String> getHeaderRules() {
         return headerRules;
     }
+
     public void addHtmlRule(String newRule) {
         htmlRules.add(newRule.toLowerCase());
     }

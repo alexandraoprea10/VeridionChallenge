@@ -10,6 +10,7 @@ import java.net.http.HttpHeaders;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.time.Duration;
@@ -26,7 +27,7 @@ public class VerifyRules {
         return "http://" + domain;
     }
     public void verifyTechnologies(HttpClient client, String domain, List<Technology> technologyList,
-                                   Set<String> allTechnologies, String newURL, JSONObject newTechJSON) throws IOException, InterruptedException {
+                                   Set<String> allTechnologies, String newURL) throws IOException, InterruptedException {
 
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(newURL))
@@ -119,8 +120,17 @@ public class VerifyRules {
         System.out.println("For domain: " + domain + " I found: " + foundTech);
         List<String> techList = new ArrayList<>(foundTech);
         JSONArray techArray = new JSONArray(techList);
-        String createLine =  "\"" + domain + " \":\n " + techArray.toString() + ",\n";
-        Files.writeString(Paths.get("tech_explained.json"), createLine, StandardOpenOption.CREATE, StandardOpenOption.APPEND);
+
+        Path outputDirectory = Paths.get("outputs");
+        if (Files.notExists(outputDirectory)) {
+            Files.createDirectories(outputDirectory);
+        }
+
+        JSONObject createDomain = new JSONObject();
+        createDomain.put("technologies", techArray);
+
+        String createFile = "outputs/" + domain +".json";
+        Files.writeString(Paths.get(createFile), createDomain.toString(4), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
         for (int i = 0; i < techList.size(); i++) {
             String tech = techList.get(i);
             allTechnologies.add(tech);

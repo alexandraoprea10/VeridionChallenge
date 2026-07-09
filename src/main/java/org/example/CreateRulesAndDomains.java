@@ -94,6 +94,7 @@ public class CreateRulesAndDomains {
                     newTech.addHeaderRule(headerRule);
                 }
             }
+
             technologyList.add(newTech);
         }
         return technologyList;

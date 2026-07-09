@@ -11,7 +11,7 @@ import java.util.Set;
 
 public class Main {
     void main() throws IOException, InterruptedException {
-        String domains = "domenii.txt";
+        String domains = "domains.txt";
         String rules = "technologies.json";
 
         CreateRulesAndDomains helper = new CreateRulesAndDomains();
@@ -19,20 +19,18 @@ public class Main {
         List<String> domainList = helper.createDomains(domains);
         Set<String> allTechnologies = new HashSet<>();
 
-        HttpClient client = HttpClient.newBuilder()
-                .followRedirects(HttpClient.Redirect.NORMAL)
-                .connectTimeout(Duration.ofSeconds(20))
-                .build();
-
         VerifyRules secondHelper = new VerifyRules();
-        JSONObject createJSONArray = new JSONObject();
         for (int i = 0; i < domainList.size(); i++) {
+            HttpClient client = HttpClient.newBuilder()
+                    .followRedirects(HttpClient.Redirect.NORMAL)
+                    .connectTimeout(Duration.ofSeconds(20))
+                    .build();
             String currentDomain = domainList.get(i);
             try {
-                secondHelper.verifyTechnologies(client, currentDomain, technologyList, allTechnologies, secondHelper.createHttpsURL(currentDomain), createJSONArray);
+                secondHelper.verifyTechnologies(client, currentDomain, technologyList, allTechnologies, secondHelper.createHttpsURL(currentDomain));
             } catch (Exception e) {
                 try {
-                    secondHelper.verifyTechnologies(client, currentDomain, technologyList, allTechnologies, secondHelper.createHttpURL(currentDomain), createJSONArray);
+                    secondHelper.verifyTechnologies(client, currentDomain, technologyList, allTechnologies, secondHelper.createHttpURL(currentDomain));
                 } catch (Exception e2) {
                     System.out.println("Error for domain: "+ currentDomain +". The error is: " + e2.toString());
                 }
