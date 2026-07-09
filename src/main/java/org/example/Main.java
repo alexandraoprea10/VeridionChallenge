@@ -1,9 +1,11 @@
 package org.example;
 
-import org.json.JSONObject;
 
 import java.io.IOException;
 import java.net.http.HttpClient;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.time.Duration;
 import java.util.HashSet;
 import java.util.List;
@@ -17,10 +19,14 @@ public class Main {
         CreateRulesAndDomains helper = new CreateRulesAndDomains();
         List<Technology> technologyList = helper.createRules(rules);
         List<String> domainList = helper.createDomains(domains);
+        // using a set instead of list to eliminate duplicates
         Set<String> allTechnologies = new HashSet<>();
 
         VerifyRules secondHelper = new VerifyRules();
         for (int i = 0; i < domainList.size(); i++) {
+            int currentNumber = i + 1;
+            System.out.printf("Loading domain number " + currentNumber + ". Please Wait! ");
+            // 20 second timeout to prevent the program from blocking
             HttpClient client = HttpClient.newBuilder()
                     .followRedirects(HttpClient.Redirect.NORMAL)
                     .connectTimeout(Duration.ofSeconds(20))
@@ -35,7 +41,9 @@ public class Main {
                     System.out.println("Error for domain: "+ currentDomain +". The error is: " + e2.toString());
                 }
             }
+            System.out.println("Done scanning.");
         }
-        System.out.println("I found: " + allTechnologies.size());
+        Files.writeString(Paths.get("numberOfTechnologies"), String.valueOf(allTechnologies.size()), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+//        System.out.println("I found: " + allTechnologies.size());
     }
 }

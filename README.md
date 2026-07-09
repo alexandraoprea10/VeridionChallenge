@@ -53,6 +53,9 @@ a JSON, CSV or Parquet file) showing all technologies found on that particular w
 The numberOfTechnologies File: The file is located at the project root(not in the /outputs directory). It provides the total count
 of unique technologies found across all 200 domains, with no duplicates.
 
+**Hot to run the program:**
+
+
 **Debate Topics:**
 The _main issues with the implementations_ are quite different. For example, I did not know where I should search besides html content,
 cookies and headers. I managed to figure it out after reviewing the "technologies.json" file and seeing that there are some more fields 

@@ -29,6 +29,7 @@ public class VerifyRules {
     public void verifyTechnologies(HttpClient client, String domain, List<Technology> technologyList,
                                    Set<String> allTechnologies, String newURL) throws IOException, InterruptedException {
 
+        // 20 second timeout to prevent the program from blocking
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(newURL))
                 .timeout(Duration.ofSeconds(20))
@@ -38,11 +39,12 @@ public class VerifyRules {
         String htmlResponse = response.body().toLowerCase();
         HttpHeaders headerResponse = response.headers();
 
+        // efficient memory managment - merging all cokies into a single string
         List<String> cookieList = headerResponse.allValues("set-cookie");
         String cookiesResponse = String.join("; ", cookieList).toLowerCase();
 
         Set<String> foundTech = new HashSet<>();
-
+        // searching for html, meta, text, script, cookie, header rules
         for (int i = 0; i < technologyList.size(); i++) {
             Technology currentTech = technologyList.get(i);
 
@@ -117,7 +119,7 @@ public class VerifyRules {
                 }
             }
         }
-        System.out.println("For domain: " + domain + " I found: " + foundTech);
+//        System.out.println("For domain: " + domain + " I found: " + foundTech);
         List<String> techList = new ArrayList<>(foundTech);
         JSONArray techArray = new JSONArray(techList);
 

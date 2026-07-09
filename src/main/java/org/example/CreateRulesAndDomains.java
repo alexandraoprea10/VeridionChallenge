@@ -18,6 +18,7 @@ public class CreateRulesAndDomains {
         JSONObject techJson = root.getJSONObject("technologies");
         List<String> nameTechList = new ArrayList<>(techJson.keySet());
 
+        // extracting from JSON file html, meta, text, script, cookie, header rules
         for (int i = 0; i < nameTechList.size(); i++) {
             String nameTech = nameTechList.get(i);
             JSONObject JSONRule = techJson.getJSONObject(nameTech);
@@ -34,7 +35,6 @@ public class CreateRulesAndDomains {
                     }
                 }
             }
-
 
             if (!JSONRule.isNull("meta") && JSONRule.has("meta")) {
                 JSONObject metas = JSONRule.getJSONObject("meta");
