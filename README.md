@@ -1,4 +1,4 @@
-**Veridion Challange - Website Technologies Scraper**
+**Veridion Challenge - Website Technologies Scraper**
 
 **Overview:**
 The goal was to build a program capable of detecting all technologies used to build a website. By analyzing the provided list 
@@ -11,7 +11,7 @@ HttpClient to handle network requests and replies.
 As an initial step, I converted the original domain dataset into a standard .txt file("domains.txt"). This made it much easier
 to process the list of websites.
 
-**Implemtation:**
+**Implementation:**
 The application first reads the domains.txt file and converts it into a list of strings containing the target websites. For each domain
 in this list, the program executes a search function(verifyTechnologies) that inspectes all data received from the HttpClient request.
 
