@@ -26,6 +26,45 @@ public class VerifyRules {
     public String createHttpURL(String domain) {
         return "http://" + domain;
     }
+    // method that checks rules in html response(html, script, meta, header)
+    public void checkCurrentHtmlRule(List<String> ruleList, String newURL, Set<String> foundTech, Technology currentTech, String htmlResponse) {
+        for (int j = 0; j < ruleList.size(); j++) {
+            String currentHtml = ruleList.get(j).toLowerCase();
+            if (newURL.toLowerCase().contains(currentHtml)) {
+                foundTech.add(currentTech.getName());
+            }
+            if (!currentHtml.isEmpty() && htmlResponse.contains(currentHtml)) {
+                foundTech.add(currentTech.getName());
+            }
+        }
+    }
+    public void checkCurrentCookieRule(List<String> ruleList, String newURL, Set<String> foundTech, Technology currentTech, String cookieResponse) {
+        for (int j = 0; j < ruleList.size(); j++) {
+            String currentCookie = ruleList.get(j).toLowerCase();
+            if (!currentCookie.isEmpty() && cookieResponse.contains(currentCookie)) {
+                foundTech.add(currentTech.getName());
+            }
+        }
+    }
+    public void checkCurrentHeaderRule(List<String> ruleList, String newURL, Set<String> foundTech, Technology currentTech, HttpHeaders headerResponse) {
+        for (int j = 0; j < ruleList.size(); j++) {
+            String currentHeader = ruleList.get(j).toLowerCase();
+            List<String> allHeaders = new ArrayList<>(headerResponse.map().keySet());
+            for (int k = 0; k < allHeaders.size(); k++) {
+                String header = allHeaders.get(k).toLowerCase();
+                if (header.equals(currentHeader)) {
+                    foundTech.add(currentTech.getName());
+                }
+                List<String> allValues = headerResponse.map().get(allHeaders.get(k));
+                for (int l = 0; l < allValues.size(); l++) {
+                    String singleHeader = allValues.get(l).toLowerCase();
+                    if (singleHeader.contains(currentHeader)) {
+                        foundTech.add(currentTech.getName());
+                    }
+                }
+            }
+        }
+    }
     public void verifyTechnologies(HttpClient client, String domain, List<Technology> technologyList,
                                    Set<String> allTechnologies, String newURL) throws IOException, InterruptedException {
 
@@ -49,75 +88,22 @@ public class VerifyRules {
             Technology currentTech = technologyList.get(i);
 
             List<String> htmlRules = currentTech.getHtmlRules();
-            for (int j = 0; j < htmlRules.size(); j++) {
-                String currentHtml = htmlRules.get(j).toLowerCase();
-                if (newURL.toLowerCase().contains(currentHtml)) {
-                    foundTech.add(currentTech.getName());
-                }
-                if (!currentHtml.isEmpty() && htmlResponse.contains(currentHtml)) {
-                    foundTech.add(currentTech.getName());
-                }
-            }
+            checkCurrentHtmlRule(htmlRules, newURL, foundTech, currentTech, htmlResponse);
 
             List<String> metaRules = currentTech.getMetaRules();
-            for (int j = 0; j < metaRules.size(); j++) {
-                String currentHtml = metaRules.get(j).toLowerCase();
-                if (newURL.toLowerCase().contains(currentHtml)) {
-                    foundTech.add(currentTech.getName());
-                }
-                if (!currentHtml.isEmpty() && htmlResponse.contains(currentHtml)) {
-                    foundTech.add(currentTech.getName());
-                }
-            }
+            checkCurrentHtmlRule(metaRules, newURL, foundTech, currentTech, htmlResponse);
 
             List<String> textRules = currentTech.getTextRules();
-            for (int j = 0; j < textRules.size(); j++) {
-                String currentHtml = textRules.get(j).toLowerCase();
-                if (newURL.toLowerCase().contains(currentHtml)) {
-                    foundTech.add(currentTech.getName());
-                }
-                if (!currentHtml.isEmpty() && htmlResponse.contains(currentHtml)) {
-                    foundTech.add(currentTech.getName());
-                }
-            }
+            checkCurrentHtmlRule(textRules, newURL, foundTech, currentTech, htmlResponse);
 
             List<String> scriptRules = currentTech.getScriptRules();
-            for (int j = 0; j < scriptRules.size(); j++) {
-                String currentHtml = scriptRules.get(j).toLowerCase();
-                if (newURL.toLowerCase().contains(currentHtml)) {
-                    foundTech.add(currentTech.getName());
-                }
-                if (!currentHtml.isEmpty() && htmlResponse.contains(currentHtml)) {
-                    foundTech.add(currentTech.getName());
-                }
-            }
+            checkCurrentHtmlRule(scriptRules, newURL, foundTech, currentTech, htmlResponse);
 
             List<String> cookieRules = currentTech.getCookieRules();
-            for (int j = 0; j < cookieRules.size(); j++) {
-                String currentCookie = cookieRules.get(j).toLowerCase();
-                if (!currentCookie.isEmpty() && cookiesResponse.contains(currentCookie)) {
-                    foundTech.add(currentTech.getName());
-                }
-            }
+            checkCurrentCookieRule(cookieRules, newURL, foundTech, currentTech, cookiesResponse);
 
             List<String> headerRules = currentTech.getHeaderRules();
-            for (int j = 0; j < headerRules.size(); j++) {
-                String currentHeader = headerRules.get(j).toLowerCase();
-                List<String> allHeaders = new ArrayList<>(headerResponse.map().keySet());
-                for (int k = 0; k < allHeaders.size(); k++) {
-                    String header = allHeaders.get(k).toLowerCase();
-                    if (header.equals(currentHeader)) {
-                        foundTech.add(currentTech.getName());
-                    }
-                    List<String> allValues = headerResponse.map().get(allHeaders.get(k));
-                    for (int l = 0; l < allValues.size(); l++) {
-                        String singleHeader = allValues.get(l).toLowerCase();
-                        if (singleHeader.contains(currentHeader)) {
-                            foundTech.add(currentTech.getName());
-                        }
-                    }
-                }
-            }
+            checkCurrentHeaderRule(headerRules, newURL, foundTech, currentTech, headerResponse);
         }
 //        System.out.println("For domain: " + domain + " I found: " + foundTech);
         List<String> techList = new ArrayList<>(foundTech);

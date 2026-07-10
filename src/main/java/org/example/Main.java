@@ -16,13 +16,14 @@ public class Main {
         String domains = "domains.txt";
         String rules = "technologies.json";
 
-        CreateRulesAndDomains helper = new CreateRulesAndDomains();
-        List<Technology> technologyList = helper.createRules(rules);
-        List<String> domainList = helper.createDomains(domains);
+        CreateRules helper = new CreateRules();
+        CreateDomains helper2 = new CreateDomains();
+        List<Technology> technologyList = helper.createAllRules(rules);
+        List<String> domainList = helper2.createDomains(domains);
         // using a set instead of list to eliminate duplicates
         Set<String> allTechnologies = new HashSet<>();
 
-        VerifyRules secondHelper = new VerifyRules();
+        VerifyRules thirdHelper = new VerifyRules();
         for (int i = 0; i < domainList.size(); i++) {
             int currentNumber = i + 1;
             System.out.printf("Loading domain number " + currentNumber + ". Please Wait! ");
@@ -33,10 +34,10 @@ public class Main {
                     .build();
             String currentDomain = domainList.get(i);
             try {
-                secondHelper.verifyTechnologies(client, currentDomain, technologyList, allTechnologies, secondHelper.createHttpsURL(currentDomain));
+                thirdHelper.verifyTechnologies(client, currentDomain, technologyList, allTechnologies, thirdHelper.createHttpsURL(currentDomain));
             } catch (Exception e) {
                 try {
-                    secondHelper.verifyTechnologies(client, currentDomain, technologyList, allTechnologies, secondHelper.createHttpURL(currentDomain));
+                    thirdHelper.verifyTechnologies(client, currentDomain, technologyList, allTechnologies, thirdHelper.createHttpURL(currentDomain));
                 } catch (Exception e2) {
                     System.out.println("Error for domain: "+ currentDomain +". The error is: " + e2.toString());
                 }

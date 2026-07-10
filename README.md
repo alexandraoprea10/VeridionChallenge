@@ -14,7 +14,7 @@ to process the list of websites.
 
 ## **Implementation**
 The application first reads the domains.txt file and converts it into a list of strings containing the target websites. For each domain
-in this list, the program executes a search function (verifyTechnologies) that **inspects all data received from the HttpClient request**.
+in this list, the program executes a search method (verifyTechnologies) that **inspects all data received from the HttpClient request**.
 
 ## **Class Explanation**
 
@@ -32,7 +32,7 @@ For counting all Technologies, the system uses a **Set instead of a List**, beca
 
 * It also includes getters (made the fields private) and helper methods to add items for these lists.
 
-**CreateRulesAndDomains Class**
+**CreateRules Class**
 
 * To build the rule system, I searched on the internet and found a repository containing a **complete list of web technologies**
   and their features in a JSON format
@@ -41,23 +41,38 @@ For counting all Technologies, the system uses a **Set instead of a List**, beca
       https://github.com/tylerpuig/wapalyzer-core/blob/main/technologies.json
 
 
-* I downloaded this JSON database and used it to create the rules into the system. **CreateRules function** reads the **downloaded
+* I downloaded this JSON database and used it to create the rules into the system. **CreateRules method** reads the **downloaded
   technology signatures JSON file** and prepares all the rules for the matching phase. This is the part where I figured
-  what fields I should analyze in the **GET response**. I also created a function named **createDomains**
+  what fields I should analyze in the **GET response**.
+  **Code Optimization**
+* To eliminate code repetition, I used Strategy Pattern for adding rules to each field.
+* **Fields interface**: Defines a standard method ("createRule") for extracting rules from JSON database.
+* **Concrete Classes**: I created **6 separate classes**:
+
+        HtmlField, TextField, ScriptField, MetaField, Cookie Field, HeaderField
+that encapsulate the specific rules for each location.
+
+**CreateDomains Class**
+* I created a method named **createDomains**
   that reads the "domains.txt" file and returns the final **list of websites** to be scanned.
+
 
 **VerifyRules Class**
 
-* I created two **helper functions (createHttpURL and createHttpsURL)** that take a raw domain and format it into a full URL Link where
-  the Http Client can connect to. The main part of the project is created in the verifyTechnologies function. This handles the
+* I created two **helper methods (createHttpURL and createHttpsURL)** that take a raw domain and format it into a full URL Link where
+  the Http Client can connect to. The main part of the project is created in the verifyTechnologies method. This handles the
   entire ecosystem of a website.
-* Inside this function the program performs all the scanning. It uses Java's HttpClient to send a
+* Inside this method the program performs all the scanning. It uses Java's HttpClient to send a
   **GET request** to the target website. To prevent infinite looping(in case of a non-working website) I put a 20 second connection
   timeout.
-* Once the server responds, the function takes the response body and the headers. The first 4 rule sets: **html, meta, text,
+* Once the server responds, the method takes the response body and the headers. The first 4 rule sets: **html, meta, text,
   script** perform searches inside the exact same source (htmlResponse). **The cookies** are separated and it extracts all incoming Set-Cookie
   fields from the network headers and put them into a **single string** using a delimiter(I used ;). It is easier this way because I
   apply a "contains" rule and I use the memory efficiently. (In this case, complexity **O(1)**).
+* To prevent repeating identical "for" loops against the HttpClient response, I extracted the verification logic into three helper methods:
+  * **checkCurrentHtmlRule**: It evaluates the HtmlResponse that is used for Html, Meta, Text and Script rules
+  * **checkCurrentCookieRule**: It evaluates the cookie set.
+  * **checkCurrentHeaderRule**: It evaluates the HTTP response headers.
 
 ## **Output**
 After the search is complete, the system maps all technologies found into a JSONArray. It creates a directory named /outputs and
